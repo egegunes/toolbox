@@ -16,6 +16,10 @@ function toolbox_ls {
     ls $(toolbox_path)
 }
 
+function toolbox_select {
+    ls $(toolbox_path) | fzf --preview "cat $(toolbox_path)/{}" --preview-window "right:70%"
+}
+
 function toolbox_add {
     local name=$1
 
@@ -26,13 +30,31 @@ function toolbox_add {
 
 function toolbox_edit {
     local name=$1
+    if [ -z $name ]; then
+        name=$(toolbox_select)
+    fi
+
+    # probably interrupted
+    if [ -z $name ]; then
+        exit 1
+    fi
 
     vim "$(toolbox_path)/$name"
 }
 
 function toolbox_run {
     local name=$1
+    if [ -z $name ]; then
+        name=$(toolbox_select)
+    fi
+
+    # probably interrupted
+    if [ -z $name ]; then
+        exit 1
+    fi
+
     shift
+
     $(toolbox_path)/$name "${@}"
 }
 
