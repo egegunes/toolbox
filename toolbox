@@ -1,0 +1,62 @@
+#!/bin/bash
+
+TOOLBOX_DIR=$HOME/var/toolbox
+
+function toolbox_path {
+    echo $TOOLBOX_DIR/${PWD##*/}
+}
+
+function toolbox_init {
+    echo "Current working directory: ${PWD}"
+    local toolbox_path=$(toolbox_path)
+    echo "Toolbox initialized: ${toolbox_path}"
+}
+
+function toolbox_ls {
+    ls $(toolbox_path)
+}
+
+function toolbox_add {
+    local name=$1
+
+    local path=$(toolbox_path)/$name
+    vim $path
+    chmod +x $path
+}
+
+function toolbox_edit {
+    local name=$1
+
+    vim "$(toolbox_path)/$name"
+}
+
+function toolbox_run {
+    local name=$1
+    shift
+    $(toolbox_path)/$name "${@}"
+}
+
+function main {
+    local cmd=$1
+
+    shift
+    case $cmd in
+        init)
+            toolbox_init
+            ;;
+        ls)
+            toolbox_ls
+            ;;
+        add)
+            toolbox_add "${@}"
+            ;;
+        edit)
+            toolbox_edit "${@}"
+            ;;
+        run)
+            toolbox_run "${@}"
+            ;;
+    esac
+}
+
+main $@
